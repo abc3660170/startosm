@@ -1,0 +1,15 @@
+##关闭selinux
+修改 /etc/selinux/config 文件中的 SELINUX="" 为 disabled ，然后重启。
+##关闭防火墙
+systemctl disable firewalld
+
+## 共享数据库目录
+docker volume create --driver local --opt type=nfs --opt device=/home/osmdata/pgdata --opt o=bind --name pgdata
+
+## 导地图数据
+docker run --rm -it -v pgdata:/home/pgdata -v /home/osm/taiwan-latest.osm.pbf:/data.osm.pbf abc3660170/startosm import
+
+## 启动地图
+docker run  -p 3000:3000 -d -v pgdata:/home/pgdata --name osmserver abc3660170/startosm run
+
+
