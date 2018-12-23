@@ -5,11 +5,14 @@ systemctl disable firewalld
 
 ## 共享数据库目录
 docker volume create --driver local --opt type=nfs --opt device=/home/osmdata/pgdata --opt o=bind --name pgdata
+## 图片缓存目录
+docker volume create --driver local --opt type=nfs --opt device=/home/osmdata/tilescache --opt o=bind --name tilescache
+
 
 ## 导地图数据
 docker run --rm -it -v pgdata:/home/pgdata -v /home/osm/taiwan-latest.osm.pbf:/data.osm.pbf abc3660170/startosm import
 
 ## 启动地图
-docker run  -p 3000:3000 -d -v pgdata:/home/pgdata --name osmserver abc3660170/startosm run
+docker run  -p 3000:3000 -d -v pgdata:/home/pgdata -v tilescache:/home/tilecache --name osmserver abc3660170/startosm run
 
 

@@ -64,3 +64,5 @@ if [ "$1" = "run" ]; then
     exit 0
 fi
 
+echo "invalid command"
+exit 1
