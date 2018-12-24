@@ -6,7 +6,7 @@ if [ "$#" -ne 1 ]; then
     echo "    import: 初始化数据库以及导入数据"
     echo "    run: 启动地图服务器 at http://ip:3000/t/map/{z}/{x}/{y}.png"
     echo "环境变量参考:"
-    echo "    IMPORT_MEM: 导入地图数据时候需要的内存，最多不能超过30000(30GB)"
+    echo "    MAX_MEM: 导入地图数据时候需要的内存，最多不能超过30000(30GB)"
     exit 1
 fi
 
@@ -47,7 +47,7 @@ if [ "$1" = "import" ]; then
     psql -U postgres -d osm -c "CREATE EXTENSION fuzzystrmatch;"
 
     ## 导入数据
-    osm2pgsql -U btf -P 5432 -C 4000 -S /home/openstreetmap-carto/openstreetmap-carto.style -s -d osm -k -c --slim /data.osm.pbf
+    osm2pgsql -U btf -P 5432 -C $((${MAX_MEM:-4000} < 30000?${MAX_MEM:-4000}:30000)) -S /home/openstreetmap-carto/openstreetmap-carto.style -s -d osm -k -c --slim /data.osm.pbf
     su postgres -c 'pg_ctl -D /home/pgdata/ stop'
     su postgres -c 'exit'
     exit 0
@@ -59,7 +59,7 @@ if [ "$1" = "run" ]; then
     su postgres -c 'pg_ctl -D /home/pgdata/ start'
     su postgres -c 'exit'
     sleep 5
-    pm2 -i 4 start /home/tileserver/app.js
+    pm2 -i ${THREADS:-4} start /home/tileserver/app.js
     tail -f /var/log/1.txt
     exit 0
 fi

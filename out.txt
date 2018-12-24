@@ -10,7 +10,7 @@ docker volume create --driver local --opt type=nfs --opt device=/home/osmdata/ti
 
 
 ## 导地图数据
-docker run --rm -it -v pgdata:/home/pgdata -v /home/osm/taiwan-latest.osm.pbf:/data.osm.pbf abc3660170/startosm import
+docker run --rm -it -e MAX_MEM=6000 -e THREADS=4 -v pgdata:/home/pgdata -v /home/osm/taiwan-latest.osm.pbf:/data.osm.pbf abc3660170/startosm import
 
 ## 启动地图
 docker run  -p 3000:3000 -d -v pgdata:/home/pgdata -v tilescache:/home/tilecache --name osmserver abc3660170/startosm run
