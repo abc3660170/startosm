@@ -6,7 +6,8 @@ if [ "$#" -ne 1 ]; then
     echo "    import: 初始化数据库以及导入数据"
     echo "    run: 启动地图服务器 at http://ip:3000/t/map/{z}/{x}/{y}.png"
     echo "环境变量参考:"
-    echo "    MAX_MEM: 导入地图数据时候需要的内存，最多不能超过30000(30GB)"
+    echo "    MAX_MEM: 导入地图数据时候需要的内存，最多不能超过30000(30GB)，默认4000"
+    echo "    THREADS: 允许的线程数量，默认4"
     exit 1
 fi
 
@@ -23,10 +24,15 @@ if [ "$1" = "import" ]; then
     sed -i '/max_connections/d' /home/pgdata/postgresql.conf
     sed -i '/password_encryption/d' /home/pgdata/postgresql.conf
     sed -i '/hot_standby/d' /home/pgdata/postgresql.conf
+    sed -i '/synchronous_commit/d' /home/pgdata/postgresql.conf
+    sed -i '/#fsync = on/d' /home/pgdata/postgresql.conf
     sed -i "/Connection Settings/ a\listen_addresses = '*'" /home/pgdata/postgresql.conf
     sed -i '/#port = 5432/ a\max_connections = 1000' /home/pgdata/postgresql.conf
     sed -i '/#ssl_crl_file = ''/ a\password_encryption = on' /home/pgdata/postgresql.conf
     sed -i '/These settings are ignored on a master server/ a\hot_standby = on' /home/pgdata/postgresql.conf
+    sed -i '/#full_page_writes = on/ a\synchronous_commit = off' /home/pgdata/postgresql.conf
+    sed -i '/#full_page_writes = on/ a\fsync = off' /home/pgdata/postgresql.conf
+
     sed -i '$a host       all      all      0.0.0.0/0     trust' /home/pgdata/pg_hba.conf
     su postgres -c 'pg_ctl -D /home/pgdata/ restart'
     su postgres -c 'exit'
@@ -47,7 +53,8 @@ if [ "$1" = "import" ]; then
     psql -U postgres -d osm -c "CREATE EXTENSION fuzzystrmatch;"
 
     ## 导入数据
-    osm2pgsql -U btf -P 5432 -C $((${MAX_MEM:-4000} < 30000?${MAX_MEM:-4000}:30000)) -S /home/openstreetmap-carto/openstreetmap-carto.style -s -d osm -k -c --slim /data.osm.pbf
+    osm2pgsql -U btf -P 5432 --number-processes ${THREADS:-4} -C $((${MAX_MEM:-4000} < 30000?${MAX_MEM:-4000}:30000)) -S /home/openstreetmap-carto/openstreetmap-carto.style -s -d osm -k -c --slim /data.osm.pbf
+    psql -U postgres -d osm < /indexes.sql
     su postgres -c 'pg_ctl -D /home/pgdata/ stop'
     su postgres -c 'exit'
     exit 0
