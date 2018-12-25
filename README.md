@@ -2,6 +2,15 @@
 
 thanks for <a href="https://github.com/Overv/openstreetmap-tile-server">Overv</a>'s demo
 
+## First your OS must suport <a href='https://docs.docker.com/install/'>Docker</a>
+
+## install startOSM
+
+```
+docker pull abc3660170/startosm
+```
+
+
 ### careate shared database volume 
 ```
 docker volume create --driver local --opt type=nfs --opt device=/path/to/pgdata --opt o=bind --name pgdata
@@ -19,6 +28,15 @@ docker volume create --driver local --opt type=nfs --opt device=/path/to/tilesca
 ```
 docker run --rm -it -e MAX_MEM=6000 -v pgdata:/home/pgdata -v /absolutePath/to/XXXX.pbf:/data.osm.pbf abc3660170/startosm import
 ```
+### ENV: 
+    1. MAX_MEM : you can The maximum memory you can allocate
+    1. THREADS ：set Configure according to the CPU cores number
+    1. SHARED_BUFFER : you can The maximum memory you can allocate
+    1. WORK_MEM ：set Configure according to the CPU cores number
+    1. MAINTENANCE_WORK_MEM ：set Configure according to the CPU cores number
+    1. EFFECTIVE_CACHE_SIZE ：set Configure according to the CPU cores number
+  
+PBF file download from <a href="https://download.geofabrik.de/">https://download.geofabrik.de/</a>
 ### start tileserver
 
 ```
