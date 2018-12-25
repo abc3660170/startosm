@@ -15,10 +15,15 @@ docker volume create --driver local --opt type=nfs --opt device=/path/to/tilesca
 
 
 ### import pbf data
-docker run --rm -it -e MAX_MEM=6000 -v pgdata:/home/pgdata -v /absolutePath/to/XXXX.pbf:/data.osm.pbf abc3660170/startosm import
 
+```
+docker run --rm -it -e MAX_MEM=6000 -v pgdata:/home/pgdata -v /absolutePath/to/XXXX.pbf:/data.osm.pbf abc3660170/startosm import
+```
 ### start tileserver
+
+```
 docker run  -p 3000:3000 -e THREADS=2 -d -v pgdata:/home/pgdata -v tilescache:/home/tilecache --name osmserver abc3660170/startosm run
+```
 
 <p>If tileserver startup,you can access: <a href ="http://ip:3000/test.html">http://ip:3000/test.html</a></p>
 
