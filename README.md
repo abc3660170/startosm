@@ -29,12 +29,12 @@ docker volume create --driver local --opt type=nfs --opt device=/path/to/tilesca
 docker run --rm -it -e MAX_MEM=6000 -v pgdata:/home/pgdata -v /absolutePath/to/XXXX.pbf:/data.osm.pbf abc3660170/startosm import
 ```
 ### ENV: 
-    1. MAX_MEM : you can The maximum memory you can allocate
-    1. THREADS ：set Configure according to the CPU cores number
-    1. SHARED_BUFFER : you can The maximum memory you can allocate
-    1. WORK_MEM ：set Configure according to the CPU cores number
-    1. MAINTENANCE_WORK_MEM ：set Configure according to the CPU cores number
-    1. EFFECTIVE_CACHE_SIZE ：set Configure according to the CPU cores number
+    1. MAX_MEM : The maximum memory you can allocate
+    1. THREADS ：Set Configure according to the CPU cores number
+    1. SHARED_BUFFER : PG database configure
+    1. WORK_MEM ：PG database configure
+    1. MAINTENANCE_WORK_MEM ：PG database configure
+    1. EFFECTIVE_CACHE_SIZE ：PG database configure
   
 PBF file download from <a href="https://download.geofabrik.de/">https://download.geofabrik.de/</a>
 ### start tileserver
