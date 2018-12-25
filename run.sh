@@ -8,6 +8,11 @@ if [ "$#" -ne 1 ]; then
     echo "环境变量参考:"
     echo "    MAX_MEM: 导入地图数据时候需要的内存，最多不能超过30000(30GB)，默认4000"
     echo "    THREADS: 允许的线程数量，默认4"
+    echo "    SHARED_BUFFER: 默认值是128MB，需要带单位 GB，MB"
+    echo "    WORK_MEM: 默认值是4MB，需要带单位 GB，MB"
+    echo "    MAINTENANCE_WORK_MEM: 默认值是64MB，需要带单位 GB，MB"
+    echo "    EFFECTIVE_CACHE_SIZE: 默认值是4GB，需要带单位 GB，MB"
+
     exit 1
 fi
 
@@ -26,12 +31,23 @@ if [ "$1" = "import" ]; then
     sed -i '/hot_standby/d' /home/pgdata/postgresql.conf
     sed -i '/synchronous_commit/d' /home/pgdata/postgresql.conf
     sed -i '/#fsync = on/d' /home/pgdata/postgresql.conf
+    sed -i '/shared_buffers = 128MB/d' /home/pgdata/postgresql.conf
+    sed -i '/#work_mem = 4MB/d' /home/pgdata/postgresql.conf
+    sed -i '/#maintenance_work_mem = 64MB/d' /home/pgdata/postgresql.conf
+    sed -i '/#effective_cache_size = 4GB/d' /home/pgdata/postgresql.conf
+
+
     sed -i "/Connection Settings/ a\listen_addresses = '*'" /home/pgdata/postgresql.conf
     sed -i '/#port = 5432/ a\max_connections = 1000' /home/pgdata/postgresql.conf
     sed -i '/#ssl_crl_file = ''/ a\password_encryption = on' /home/pgdata/postgresql.conf
     sed -i '/These settings are ignored on a master server/ a\hot_standby = on' /home/pgdata/postgresql.conf
     sed -i '/#full_page_writes = on/ a\synchronous_commit = off' /home/pgdata/postgresql.conf
     sed -i '/#full_page_writes = on/ a\fsync = off' /home/pgdata/postgresql.conf
+    sed -i '/# - Memory -/ a\shared_buffers = '${SHARED_BUFFER:-128MB} /home/pgdata/postgresql.conf
+    sed -i '/# - Memory -/ a\work_mem = '${WORK_MEM:-4MB} /home/pgdata/postgresql.conf
+    sed -i '/# - Memory -/ a\maintenance_work_mem = '${MAINTENANCE_WORK_MEM:-64MB} /home/pgdata/postgresql.conf
+    sed -i '/# - Memory -/ a\effective_cache_size = '${EFFECTIVE_CACHE_SIZE:-4GB} /home/pgdata/postgresql.conf
+
 
     sed -i '$a host       all      all      0.0.0.0/0     trust' /home/pgdata/pg_hba.conf
     su postgres -c 'pg_ctl -D /home/pgdata/ restart'
