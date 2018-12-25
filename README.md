@@ -20,6 +20,8 @@ docker run --rm -it -e MAX_MEM=6000 -v pgdata:/home/pgdata -v /path/to/XXXX.pbf:
 ### start tileserver
 docker run  -p 3000:3000 -e THREADS=2 -d -v pgdata:/home/pgdata -v tilescache:/home/tilecache --name osmserver abc3660170/startosm run
 
+<p>If tileserver startup,you can access: <a href ="http://ip:3000/test.html">http://ip:3000/test.html</a></p>
+
 
 ## ref 9 docker images I mad
 <a href="https://cloud.docker.com/repository/docker/abc3660170/gcc">abc3660170/gcc</a>
