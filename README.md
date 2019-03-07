@@ -1,6 +1,6 @@
 # startosm
 
-thanks for <a href="https://github.com/Overv/openstreetmap-tile-server">Overv</a>'s demo
+thanks for <a href="https://github.com/Overv/openstreetmap-tile-server">Overv</a>'s demo and <a href="https://home.cnblogs.com/u/think8848/">think8848</a>
 
 ## First your OS must suport <a href='https://docs.docker.com/install/'>Docker</a>
 
